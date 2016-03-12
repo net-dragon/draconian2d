@@ -12,7 +12,7 @@ namespace UnityStandardAssets._2D
         [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
 
         [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
-        [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
+		[SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
 
 		private Animator m_Anim;            // Reference to the player's animator component.
 
@@ -40,7 +40,7 @@ namespace UnityStandardAssets._2D
 
 		//public bool beginStaminaRecharge;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
-		//private bool flying;
+		private bool flying;
 		//private bool gliding;
 		//public bool staminaRecharge;        
 
@@ -62,6 +62,7 @@ namespace UnityStandardAssets._2D
 			//staminaRecharge = false;
 			//beginStaminaRecharge = false;
 			stats.setStaminaRechargeRate (staminaRechargeRate);
+			flying = false;
         }
 		void Update ()
 		{
@@ -92,19 +93,22 @@ namespace UnityStandardAssets._2D
 				m_FlyForce = (m_BaseFlyForce + (-m_Rigidbody2D.velocity.y * 50.5f));
 			
 			}
+			currentStamina = stats.getCurrentStamina();
 		}
-			//currentStamina = stats.getCurrentStamina();
+			
 
 
-		/*public void StaminaRecharge()
+		public void StaminaRecharge()
 		{
-			if (stats.getCurrentStamina () < 100) {
+			if (stats.getCurrentStamina () < 100) 
+			{
 				stats.setCurrentStamina (currentStamina += (staminaRechargeRate * Time.deltaTime));
-		} else if (stats.getCurrentStamina () >= 100) 
+		} 
+			else if (stats.getCurrentStamina () >= 100) 
 			{
 			stats.setCurrentStamina (maxStamina);
 		    }
-	    }*/
+	    }
 
 
 			private void Flip()
@@ -178,22 +182,26 @@ namespace UnityStandardAssets._2D
 			} else {
 				m_Rigidbody2D.drag = normalDrag;
 			}
-		    //Recharges Stamina when it reaches zero over time
-			if (stats.getCurrentStamina () < 100 && m_Grounded) {
-				stats.setCurrentStamina (currentStamina += (staminaRechargeRate * Time.deltaTime));
+
+			if (nextFlap < flapDelay && !m_Grounded)
+				flying = true;
+		    //resets stamina delay
+			if ((stats.getCurrentStamina() >= 100 && staminaRechargeDelay <= 0) || (flying && staminaRechargeDelay <= 0))
+			{
+				staminaRechargeDelay = baseStaminaRechargeDelay;
 			}
 			// Stamina recharge
-			/* if (stats.getCurrentStamina () <= 0 && m_Grounded)
+			 if (stats.getCurrentStamina () <= 100)
 				staminaRechargeDelay -= Time.deltaTime;
 
 
 			if (staminaRechargeDelay <= 0.0f) {
 
-				while (stats.getCurrentStamina () < 100 && m_Grounded)
+				if (stats.getCurrentStamina () < 100 && m_Grounded)
 				{
 					StaminaRecharge();
 				}
-			}*/
+			}
 		}
     }
 }

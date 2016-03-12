@@ -94,6 +94,10 @@ namespace UnityStandardAssets._2D
 			
 			}
 			currentStamina = stats.getCurrentStamina();
+
+			if (stats.getCurrentStamina () < 0) 
+			
+				stats.setCurrentStamina (0);
 		}
 			
 
@@ -119,7 +123,7 @@ namespace UnityStandardAssets._2D
 				// Multiply the player's x local scale by -1.
 				Vector3 theScale = transform.localScale;
 				theScale.x *= -1;
-				transform.localScale = theScale;
+			transform.localScale = theScale;
 				
 			}
 
@@ -183,24 +187,27 @@ namespace UnityStandardAssets._2D
 				m_Rigidbody2D.drag = normalDrag;
 			}
 
-			if (nextFlap < flapDelay && !m_Grounded)
+			if (Time.time < nextFlap && !m_Grounded)
 				flying = true;
+			else 
+				flying = false;
+
 		    //resets stamina delay
-			if ((stats.getCurrentStamina() >= 100 && staminaRechargeDelay <= 0) || (flying && staminaRechargeDelay <= 0))
+			if ((stats.getCurrentStamina() >= 100 && staminaRechargeDelay <= 0.0f) || (flying && staminaRechargeDelay <= 0.0f))
 			{
 				staminaRechargeDelay = baseStaminaRechargeDelay;
 			}
 			// Stamina recharge
-			 if (stats.getCurrentStamina () <= 100)
+			 if (stats.getCurrentStamina () < 100)
 				staminaRechargeDelay -= Time.deltaTime;
 
 
-			if (staminaRechargeDelay <= 0.0f) {
+			if (staminaRechargeDelay <= 0.0f && m_Grounded) {
 
-				if (stats.getCurrentStamina () < 100 && m_Grounded)
-				{
-					StaminaRecharge();
-				}
+
+
+				StaminaRecharge();
+
 			}
 		}
     }

@@ -46,11 +46,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Draconian2D\CameraFollow.cs" />
-     <Compile Include="Assets\Scripts\Draconian2D\Platformer2DUserControl.cs" />
-     <Compile Include="Assets\Scripts\Draconian2D\PlatformerCharacter2D.cs" />
-     <Compile Include="Assets\Scripts\Draconian2D\PlayerAttack.cs" />
-     <Compile Include="Assets\Scripts\Draconian2D\PlayerStats.cs" />
+     <Compile Include="Assets\Scripts\CameraFollow.cs" />
+     <Compile Include="Assets\Scripts\Platformer2DUserControl.cs" />
+     <Compile Include="Assets\Scripts\PlatformerCharacter2D.cs" />
+     <Compile Include="Assets\Scripts\PlayerAttack.cs" />
+     <Compile Include="Assets\Scripts\PlayerStats.cs" />
      <Compile Include="Assets\StaminaRecharge.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

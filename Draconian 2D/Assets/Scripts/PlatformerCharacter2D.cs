@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 namespace UnityStandardAssets._2D
 {
@@ -7,7 +8,6 @@ namespace UnityStandardAssets._2D
     {
         [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
         [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
-		[SerializeField] private float m_BaseFlyForce = 400f;               // Base amount of force added when player flies. Reference for FlyForce
 		[SerializeField] private float m_FlyForce = 400f;                   //Amount of force added when the player jumps. Modifies and changes
         [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
 
@@ -42,7 +42,13 @@ namespace UnityStandardAssets._2D
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 		private bool flying;
 		//private bool gliding;
-		//public bool staminaRecharge;        
+		//public bool staminaRecharge;
+
+		public float flyTime =.7f;
+		public Vector2 flyVector;
+		public Transform charPos;
+		public float maxFallSpeed =-100f;
+		public float maxFlySpeed =7.0f;
 
 
 
@@ -62,17 +68,28 @@ namespace UnityStandardAssets._2D
 			//staminaRecharge = false;
 			//beginStaminaRecharge = false;
 			stats.setStaminaRechargeRate (staminaRechargeRate);
-			flying = false;
         }
 		void Update ()
 		{
-			Debug.Log (stats.getCurrentStamina ()); //logs stamina	
+				
 		}
 	    
 
 
         private void FixedUpdate()
-        {
+        {/*
+			Debug.Log (m_Rigidbody2D.velocity.y);
+			if (m_Rigidbody2D.velocity.y < maxFallSpeed) 
+			{
+
+				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, maxFallSpeed);
+			}
+
+			if(m_Rigidbody2D.velocity.y > maxFlySpeed)
+			{
+					m_Rigidbody2D.velocity = Vector2.ClampMagnitude(m_Rigidbody2D.velocity, maxFlySpeed);
+			}*/
+
 			m_Grounded = false;
 
 			// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
@@ -85,30 +102,64 @@ namespace UnityStandardAssets._2D
 			m_Anim.SetBool ("Ground", m_Grounded);
 
 
-			// Boosts flyforce depending on downward speed
+		
 			m_Anim.SetFloat ("vSpeed", m_Rigidbody2D.velocity.y);
-			if (m_Rigidbody2D.velocity.y > -3) {
-				m_FlyForce = m_BaseFlyForce;
-			} else {
-				m_FlyForce = (m_BaseFlyForce + (-m_Rigidbody2D.velocity.y * 50.5f));
-			
-			}
+
 			currentStamina = stats.getCurrentStamina();
 
 			if (stats.getCurrentStamina () < 0) 
 			
 				stats.setCurrentStamina (0);
+
+			charPos.position = m_Rigidbody2D.position;
+			flyVector = new Vector2 (charPos.position.x, (charPos.position.y + m_FlyForce));
+
+
+			if(Input.GetButtonDown("Jump") /*&& !jumping*/ && stats.getCurrentStamina () > 0 && Time.time > nextFlap && Time.time > nextGlide)
+			{
+				//jumping = true;
+				StartCoroutine(FlyRoutine());
+				stats.setCurrentStamina (stats.getCurrentStamina () - 20);
+			}
+
+
+		}
+
+		IEnumerator FlyRoutine()
+		{
+			//m_Rigidbody2D.velocity = Vector2.zero;
+			float timer = 0;
+			
+			while(Input.GetButton("Jump") && timer < flyTime && !m_Grounded )
+			{
+				//Calculate how far through the jump we are as a percentage
+				//apply the full jump force on the first frame, then apply less force
+				//each consecutive frame
+				
+				float proportionCompleted = timer / flyTime;
+				Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
+				m_Rigidbody2D.AddForce(thisFrameFlyVector);
+				timer += Time.deltaTime;
+				Debug.Log (thisFrameFlyVector);
+				Debug.Log (timer);
+				nextFlap = Time.time + flapDelay;
+				nextGlide = Time.time + glideDelay;
+
+				yield return null;
+			}
+			
+			//jumping = false;
 		}
 			
 
 
 		public void StaminaRecharge()
 		{
-			if (stats.getCurrentStamina () < 100) 
+			if (stats.getCurrentStamina () < stats.getMaxStamina ()) 
 			{
 				stats.setCurrentStamina (currentStamina += (staminaRechargeRate * Time.deltaTime));
 		} 
-			else if (stats.getCurrentStamina () >= 100) 
+			else if (stats.getCurrentStamina () >= stats.getMaxStamina ()) 
 			{
 			stats.setCurrentStamina (maxStamina);
 		    }
@@ -171,13 +222,13 @@ namespace UnityStandardAssets._2D
 				m_Rigidbody2D.AddForce (new Vector2 (0f, m_JumpForce));
 			}
 			// if player should fly
-			if (!m_Grounded && stats.getCurrentStamina () > 0 && jump && Time.time > nextFlap && Time.time > nextGlide) {
+			/*if (!m_Grounded && stats.getCurrentStamina () > 0 && jump && Time.time > nextFlap && Time.time > nextGlide) {
 				//nextGlide = Time.time + glideDelay;
 				nextFlap = Time.time + flapDelay;
 				nextGlide = Time.time + glideDelay;
 				m_Rigidbody2D.AddForce (new Vector2 (0f, m_FlyForce));
 				stats.setCurrentStamina (stats.getCurrentStamina () - 20);
-			}
+			}*/
 		
 			// if player should glide
 			if (stats.getCurrentStamina () > 0 && Input.GetKey(KeyCode.LeftShift) && Time.time > nextFlap && m_Rigidbody2D.velocity.y < -2 ) {
@@ -193,12 +244,12 @@ namespace UnityStandardAssets._2D
 				flying = false;
 
 		    //resets stamina delay
-			if ((stats.getCurrentStamina() >= 100 && staminaRechargeDelay <= 0.0f) || (flying && staminaRechargeDelay <= 0.0f))
+			if ((stats.getCurrentStamina() >= stats.getMaxStamina () && staminaRechargeDelay <= 0.0f) || (flying && staminaRechargeDelay <= 0.0f))
 			{
 				staminaRechargeDelay = baseStaminaRechargeDelay;
 			}
 			// Stamina recharge
-			 if (stats.getCurrentStamina () < 100)
+			if (stats.getCurrentStamina () < stats.getMaxStamina ())
 				staminaRechargeDelay -= Time.deltaTime;
 
 

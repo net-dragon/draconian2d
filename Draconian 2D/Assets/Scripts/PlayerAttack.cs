@@ -10,7 +10,9 @@ public class PlayerAttack : MonoBehaviour
 	public Vector2 mousePos;
 	private Rigidbody2D m_Rigidbody2D;
 	private Vector2 dashVector;
-	public float dashForce = 100f;	
+	public float dashForce = 100f;
+    //public float vectorSaveTime = .4f;
+   // public float dashDuration;
 
 
 
@@ -21,7 +23,8 @@ public class PlayerAttack : MonoBehaviour
 		//chargingDash = false;
 		//dashing = false;
 		chargeCounter = 0f;
-	}
+        //dashDuration = 0;
+}
 	
 	// Update is called once per frame
 	void Update () 
@@ -42,7 +45,7 @@ public class PlayerAttack : MonoBehaviour
 		
 			//if (chargeCounter >= chargeStart)
 				//dashing = true;
-				//StartCoroutine(DashRoutine());
+				//StartCoroutine(DashChargeRoutine());
 			 
 		}
 
@@ -51,8 +54,9 @@ public class PlayerAttack : MonoBehaviour
 		{				
 			if (chargeCounter >= chargeStart)
 			{
-				dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y );
-				m_Rigidbody2D.AddForce(dashVector *dashForce);
+                //dashDuration += (dashDuration * Timte.deltaTime);
+                dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y );
+				m_Rigidbody2D.AddForce(mousePos.normalized *dashForce, ForceMode2D.Impulse);
 				//dashing = true;
 			}
 			chargeCounter = 0f;			

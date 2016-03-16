@@ -50,6 +50,12 @@ namespace UnityStandardAssets._2D
 		public float maxFallSpeed =-100f;
 		public float maxFlySpeed =7.0f;
 
+        public bool AirControl
+        {
+            get { return m_AirControl; }
+            set { m_AirControl = value; }
+        }
+
 
 
 

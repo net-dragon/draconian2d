@@ -50,6 +50,12 @@ namespace UnityStandardAssets._2D
 		public float maxFallSpeed =-100f;
 		public float maxFlySpeed =7.0f;
 
+        public bool AirControl
+        {
+            get { return m_AirControl; }
+            set { m_AirControl = value; }
+        }
+
 
 
 
@@ -140,8 +146,6 @@ namespace UnityStandardAssets._2D
 				Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
 				m_Rigidbody2D.AddForce(thisFrameFlyVector);
 				timer += Time.deltaTime;
-				Debug.Log (thisFrameFlyVector);
-				Debug.Log (timer);
 				nextFlap = Time.time + flapDelay;
 				nextGlide = Time.time + glideDelay;
 

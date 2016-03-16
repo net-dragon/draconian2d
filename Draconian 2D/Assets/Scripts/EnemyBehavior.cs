@@ -52,10 +52,10 @@ public class EnemyBehavior : MonoBehaviour {
 
 		//Get the proper direction
 		direction = lookVector.x == 0 ? direction : lookVector.x > 0 ? 1 : -1;
-		//if (direction == 1)
-			//GetComponent<SpriteRenderer> ().flipX = true;
-		//else
-			//GetComponent<SpriteRenderer> ().flipX = false;
+		if (direction == 1)
+			GetComponent<SpriteRenderer> ().flipX = true;
+		else
+			GetComponent<SpriteRenderer> ().flipX = false;
 
 		//Shoot a bullet if it's looking at the player
 		if (IsPlayerInsideCone(lookVector, rad, coneLength)) {//is looking at the player

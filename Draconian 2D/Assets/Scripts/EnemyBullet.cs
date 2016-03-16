@@ -13,7 +13,7 @@ public class EnemyBullet : MonoBehaviour {
 	void Start () {
 		lifeCounter = lifetime;
 
-		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
+		Rigidbody rb = GetComponent<Rigidbody> ();
 		rb.velocity = transform.right * speed;
 	}
 	

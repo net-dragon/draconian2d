@@ -219,7 +219,7 @@ namespace UnityStandardAssets._2D
 			m_Anim.SetBool ("Crouch", crouch);
 
 			//only control the player if grounded or airControl is turned on
-			if ((m_Grounded || m_AirControl) && !attacker.dashing) {
+			if (m_AirControl && !attacker.dashing) {
                
 				// Reduce the speed if crouching by the crouchSpeed multiplier
 				move = (crouch ? move * m_CrouchSpeed : move);
@@ -229,8 +229,10 @@ namespace UnityStandardAssets._2D
 
                 // Move the character
                 if(m_Rigidbody2D.velocity.x * movement.x < m_MaxSpeed)
+                    if(!m_Grounded)
                     m_Rigidbody2D.AddForce(movement.normalized * m_MoveSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                //if (move = 0)
+                else
+                        m_Rigidbody2D.velocity = new Vector2(move * m_MaxSpeed, m_Rigidbody2D.velocity.y);
 
 
                 // If the input is moving the player right and the player is facing left...

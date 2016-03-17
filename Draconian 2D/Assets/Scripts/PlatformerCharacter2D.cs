@@ -149,7 +149,7 @@ namespace UnityStandardAssets._2D
 				//each consecutive frame
 				
 				float proportionCompleted = timer / flyTime;
-				Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
+				//Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
                 //m_Rigidbody2D.AddForce(thisFrameFlyVector);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, m_FlyForce);
 				timer += Time.deltaTime;

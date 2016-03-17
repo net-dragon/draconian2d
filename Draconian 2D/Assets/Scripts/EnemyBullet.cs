@@ -26,7 +26,6 @@ public class EnemyBullet : MonoBehaviour {
 	void FixedUpdate () {
 		
 		--lifeCounter;
-		Debug.Log ("Life Counter: " + lifeCounter.ToString());
 		if (lifeCounter == 0)
 			Destroy (gameObject);
 	}

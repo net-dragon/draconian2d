@@ -11,12 +11,16 @@ public class PlayerAttack : MonoBehaviour
 	public Vector2 mousePos;
 	private Rigidbody2D m_Rigidbody2D;
 	private Vector2 dashVector;
-	public float dashForce = 100f;
+	public float initialDashForce = 50f;
+    public float dashIncrement = 1f;
+    public float dashForce;
+    public float maxDashForce = 100f;
     //public float vectorSaveTime = .4f;
     public float dashDuration;
     public float dashStop = 1f;
    // public float upTimer;
     private PlatformerCharacter2D character;
+    
 
     public bool dashing
     {
@@ -35,6 +39,7 @@ public class PlayerAttack : MonoBehaviour
 		chargeCounter = 0f;
         dashDuration = dashStop;
         //upTimer = 0f;
+        dashForce = initialDashForce;
     }
 	
 	// Update is called once per frame
@@ -55,6 +60,13 @@ public class PlayerAttack : MonoBehaviour
 		{
 		
 			chargeCounter++;
+            if (chargeCounter >= chargeStart)
+
+                dashForce += (dashIncrement * Time.deltaTime);
+            
+            if (dashForce > maxDashForce)
+
+                dashForce = maxDashForce;
 
 		
 			//if (chargeCounter >= chargeStart)
@@ -71,7 +83,8 @@ public class PlayerAttack : MonoBehaviour
                 dashDuration = 0f;
                 // dashDuration += (dashDuration * Time.deltaTime);
                 dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y );
-				m_Rigidbody2D.AddForce(dashVector *dashForce, ForceMode2D.Impulse);
+                m_Rigidbody2D.AddForce(dashVector * dashForce, ForceMode2D.Impulse);
+                dashForce = initialDashForce;
                 //dashing = true;
                 //StartCoroutine( DashRoutine());
                 //dashDuration = 0f;

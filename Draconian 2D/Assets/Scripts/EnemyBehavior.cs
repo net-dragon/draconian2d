@@ -18,6 +18,11 @@ public class EnemyBehavior : MonoBehaviour {
 	private float coneAngle; //the angle from forward to the edge of the "cone" in degrees
 	private float coneLength;
 
+    private uint timeOutOfRange = 0;
+    private uint extendedRangeTime = 300;
+
+    public uint shotStartDelay = 7;
+    private uint shotStartTimer = 0;
 	public uint shotDelay; //in frames
 	private uint shotCounter = 0;
 
@@ -57,12 +62,24 @@ public class EnemyBehavior : MonoBehaviour {
 		else
 			GetComponent<SpriteRenderer> ().flipX = false;
 
+        if(shotStartTimer != 0)
+        {
+            ++shotStartTimer;
+            if(shotStartTimer == shotStartDelay)
+            {
+                shotStartTimer = 0;
+                Instantiate(bullet, transform.position, Quaternion.FromToRotation(Vector2.right, lookVector));
+                shotCounter = shotDelay;
+            }
+        }
+
 		//Shoot a bullet if it's looking at the player
 		if (IsPlayerInsideCone(lookVector, rad, coneLength)) {//is looking at the player
 
 			if (shotCounter == 0) {
-				Instantiate (bullet, transform.position, Quaternion.FromToRotation (Vector2.right, lookVector));
-				shotCounter = shotDelay;
+				
+                if(shotStartTimer == 0)
+                    ++shotStartTimer;
 				transform.FindChild ("Enemy Suspicion").gameObject.SetActive (false);
 			}
 
@@ -70,9 +87,14 @@ public class EnemyBehavior : MonoBehaviour {
 			coneLength = expandedConeLength;
 
 		} else {
+
+            ++timeOutOfRange;
+            if(timeOutOfRange >= extendedRangeTime)
+            {
+                coneAngle = normalConeAngle;
+                coneLength = normalConeLength;
+            }
 			
-			coneAngle = normalConeAngle;
-			coneLength = normalConeLength;
 
 			transform.FindChild ("Enemy Suspicion").gameObject.SetActive (IsPlayerInsideCone (lookVector, sRad, suspiciousConeLength));
 		}
@@ -86,4 +108,6 @@ public class EnemyBehavior : MonoBehaviour {
 		return lookVector.magnitude <= coneLen && //close enough
 			Vector2.Dot ((Vector2.right * direction), lookVector.normalized) >= Mathf.Cos (coneAngleRad);
 	}
+
+   // bool OnCollision
 }

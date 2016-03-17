@@ -15,24 +15,26 @@ public class PlayerAttack : MonoBehaviour
     //public float vectorSaveTime = .4f;
     public float dashDuration;
     public float dashStop = 1f;
-    public float upTimer;
+   // public float upTimer;
     private PlatformerCharacter2D character;
 
-
+    public bool dashing
+    {
+        get { return dashDuration < dashStop; }
+    }
 
 
     // Use this for initialization
     void Start () 
 	{
-        character = (PlatformerCharacter2D)GameObject.Find("CharacterRobotBoy").GetComponent(typeof(PlatformerCharacter2D));
-        Debug.Log(character.AirControl);
+        character = GetComponent<PlatformerCharacter2D>();
 
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
 		//chargingDash = false;
 		//dashing = false;
 		chargeCounter = 0f;
         dashDuration = dashStop;
-        upTimer = 0f;
+        //upTimer = 0f;
     }
 	
 	// Update is called once per frame
@@ -46,9 +48,8 @@ public class PlayerAttack : MonoBehaviour
 
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		Debug.DrawLine (transform.position, mousePos);
-		Debug.Log (chargeCounter);
 
-        Debug.Log(upTimer);
+       // Debug.Log(upTimer);
 
         if (Input.GetButton ("Fire1")) 
 		{
@@ -74,7 +75,7 @@ public class PlayerAttack : MonoBehaviour
                 //dashing = true;
                 //StartCoroutine( DashRoutine());
                 //dashDuration = 0f;
-                upTimer += (upTimer * Time.deltaTime);
+                //upTimer += (upTimer * Time.deltaTime);
 
                
 
@@ -84,10 +85,12 @@ public class PlayerAttack : MonoBehaviour
 				
 			   
 		}
-        if (dashDuration < dashStop)
+        if (dashDuration < dashStop) {
             character.AirControl = false;
-        else
+        }
+        else {
             character.AirControl = true;
+        }
 
 
 

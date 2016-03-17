@@ -8,12 +8,13 @@ public class EnemyBullet : MonoBehaviour {
 	public float speed;
 
 	private uint lifeCounter;
+    private bool disabled = false;
 
 	// Use this for initialization
 	void Start () {
 		lifeCounter = lifetime;
 
-		Rigidbody rb = GetComponent<Rigidbody> ();
+		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
 		rb.velocity = transform.right * speed;
 	}
 	
@@ -31,10 +32,13 @@ public class EnemyBullet : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D clsn) {
-		if (clsn.collider.CompareTag ("Player")) {
+		if (clsn.collider.CompareTag ("Player") && !disabled) {
 			clsn.gameObject.SetActive (false);
 
 			GameObject.Find ("Canvas/Message").GetComponent<Text> ().text = "Game Over!";
-		} 
+		}
+        if (clsn.collider.CompareTag("Ground")) {
+            disabled = true;
+        }
 	}
 }

@@ -8,7 +8,7 @@ namespace UnityStandardAssets._2D
     {
         [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
         [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
-		[SerializeField] private float m_FlyForce = 400f;                   //Amount of force added when the player jumps. Modifies and changes
+		[SerializeField] private float m_FlyForce = 2f;                   //Amount of force added when the player jumps. Modifies and changes
         [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
 
         [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
@@ -55,12 +55,14 @@ namespace UnityStandardAssets._2D
             get { return m_AirControl; }
             set { m_AirControl = value; }
         }
-
+        private PlayerAttack attacker;
 
 
 
         private void Awake()
         {
+            attacker = GetComponent<PlayerAttack>();
+
             // Setting up references.
             m_GroundCheck = transform.Find("GroundCheck");
             m_CeilingCheck = transform.Find("CeilingCheck");
@@ -85,11 +87,11 @@ namespace UnityStandardAssets._2D
         private void FixedUpdate()
         {/*
 			Debug.Log (m_Rigidbody2D.velocity.y);
-			if (m_Rigidbody2D.velocity.y < maxFallSpeed) 
+			*/if (m_Rigidbody2D.velocity.y < maxFallSpeed) 
 			{
 
 				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, maxFallSpeed);
-			}
+			}/*
 
 			if(m_Rigidbody2D.velocity.y > maxFlySpeed)
 			{
@@ -98,14 +100,19 @@ namespace UnityStandardAssets._2D
 
 			m_Grounded = false;
 
-			// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-			// This can be done using layers instead but Sample Assets will not overwrite your project settings.
-			Collider2D[] colliders = Physics2D.OverlapCircleAll (m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-			for (int i = 0; i < colliders.Length; i++) {
-				if (colliders [i].gameObject != gameObject)
-					m_Grounded = true;
-			}
-			m_Anim.SetBool ("Ground", m_Grounded);
+            if (!attacker.dashing)
+            {
+                // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+                // This can be done using layers instead but Sample Assets will not overwrite your project settings.
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+                for (int i = 0; i < colliders.Length; i++)
+                {
+                    if (colliders[i].gameObject != gameObject)
+                        m_Grounded = true;
+                }
+                m_Anim.SetBool("Ground", m_Grounded);
+            }
+			
 
 
 		
@@ -127,8 +134,7 @@ namespace UnityStandardAssets._2D
 				StartCoroutine(FlyRoutine());
 				stats.setCurrentStamina (stats.getCurrentStamina () - 20);
 			}
-
-
+            
 		}
 
 		IEnumerator FlyRoutine()
@@ -144,7 +150,8 @@ namespace UnityStandardAssets._2D
 				
 				float proportionCompleted = timer / flyTime;
 				Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
-				m_Rigidbody2D.AddForce(thisFrameFlyVector);
+                //m_Rigidbody2D.AddForce(thisFrameFlyVector);
+                m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, m_FlyForce);
 				timer += Time.deltaTime;
 				nextFlap = Time.time + flapDelay;
 				nextGlide = Time.time + glideDelay;
@@ -198,6 +205,10 @@ namespace UnityStandardAssets._2D
 
 			//only control the player if grounded or airControl is turned on
 			if (m_Grounded || m_AirControl) {
+                if(attacker.dashing)
+                {
+                    Debug.Log("This isn't supposed to happen...");
+                }
 				// Reduce the speed if crouching by the crouchSpeed multiplier
 				move = (crouch ? move * m_CrouchSpeed : move);
 

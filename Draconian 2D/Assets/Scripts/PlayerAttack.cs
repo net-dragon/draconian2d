@@ -62,7 +62,7 @@ public class PlayerAttack : MonoBehaviour
             chargeCounter++;
             if (chargeCounter >= chargeStart)
 
-                dashForce += (dashIncrement * Time.deltaTime);
+                dashForce += (dashIncrement + Time.deltaTime);
 
             if (dashForce > maxDashForce)
 
@@ -83,7 +83,7 @@ public class PlayerAttack : MonoBehaviour
                 dashDuration = 0f;
                 // dashDuration += (dashDuration * Time.deltaTime);
                 dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
-                m_Rigidbody2D.AddForce(dashVector * dashForce, ForceMode2D.Impulse);
+                m_Rigidbody2D.AddForce(dashVector.normalized * dashForce, ForceMode2D.Impulse);
                 dashForce = initialDashForce;
                 //dashing = true;
                 //StartCoroutine( DashRoutine());

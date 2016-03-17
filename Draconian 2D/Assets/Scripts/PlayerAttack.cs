@@ -6,6 +6,7 @@ public class PlayerAttack : MonoBehaviour
 {
     //private bool chargingDash;
     //private bool dashing;
+    public float dashCost = 50f;
     public float chargeStart = 100f;
     public float chargeCounter;
     public Vector2 mousePos;
@@ -20,6 +21,7 @@ public class PlayerAttack : MonoBehaviour
     public float dashStop = 1f;
     // public float upTimer;
     private PlatformerCharacter2D character;
+    public float stam;
 
 
     public bool dashing
@@ -48,17 +50,19 @@ public class PlayerAttack : MonoBehaviour
 
     }
     private void FixedUpdate()
-    {
+    { 
         dashDuration += Time.deltaTime;
+        stam = character.currentStamina;
 
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Debug.DrawLine(transform.position, mousePos);
 
         // Debug.Log(upTimer);
-
-        if (Input.GetButton("Fire1"))
+        if (character.currentStamina > 0)
         {
-
+            if (Input.GetButton("Fire1"))
+           {
+            
             chargeCounter++;
             if (chargeCounter >= chargeStart)
 
@@ -67,6 +71,7 @@ public class PlayerAttack : MonoBehaviour
             if (dashForce > maxDashForce)
 
                 dashForce = maxDashForce;
+            }
 
 
             //if (chargeCounter >= chargeStart)
@@ -85,19 +90,19 @@ public class PlayerAttack : MonoBehaviour
                 dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
                 m_Rigidbody2D.AddForce(dashVector.normalized * dashForce, ForceMode2D.Impulse);
                 dashForce = initialDashForce;
-                //dashing = true;
-                //StartCoroutine( DashRoutine());
-                //dashDuration = 0f;
-                //upTimer += (upTimer * Time.deltaTime);
-
-
-
+                character.stats.setCurrentStamina(character.currentStamina - dashCost);
             }
+            //dashing = true;
+            //StartCoroutine( DashRoutine());
+            //dashDuration = 0f;
+            //upTimer += (upTimer * Time.deltaTime);
+
 
             chargeCounter = 0f;
-
-
         }
+
+            
+
         if (dashDuration < dashStop)
         {
             character.AirControl = false;
@@ -106,10 +111,12 @@ public class PlayerAttack : MonoBehaviour
             character.AirControl = true;
         }
 
-
-
-
     }
+       
+
+
+
+
 
     /*IEnumerator DashRoutine()
 	{

@@ -26,6 +26,7 @@ namespace UnityStandardAssets._2D
 		const float k_CeilingRadius = .01f; // Radius of the overlap circle to determine if the player can stand up
 		public float currentStamina;        // Current stamina derived from getCurrentStamina();
 		public float flapDelay = .3f;      //Delay between flaps
+        public float flyCost = 20f;
 		public float glideDelay = .3f;     // Delay between glide and other flying actions
 		public float glideDrag = 10.0f;    // Drag applied to player when gliding
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
@@ -37,7 +38,7 @@ namespace UnityStandardAssets._2D
 		public float staminaRechargeRate = 50.0f; //Rate stamina recharges
 
         private Rigidbody2D m_Rigidbody2D;  
-		private PlayerStats stats = new PlayerStats();
+		public PlayerStats stats = new PlayerStats();
 
 		//public bool beginStaminaRecharge;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
@@ -55,6 +56,12 @@ namespace UnityStandardAssets._2D
         {
             get { return m_AirControl; }
             set { m_AirControl = value; }
+        }
+
+        public float Stamina
+        {
+            get { return currentStamina; }
+            set { currentStamina = value; }
         }
         private PlayerAttack attacker;
 
@@ -145,7 +152,7 @@ namespace UnityStandardAssets._2D
 			{
 				//jumping = true;
 				StartCoroutine(FlyRoutine());
-				stats.setCurrentStamina (stats.getCurrentStamina () - 20);
+				stats.setCurrentStamina (stats.getCurrentStamina () - flyCost);
 			}
             
             

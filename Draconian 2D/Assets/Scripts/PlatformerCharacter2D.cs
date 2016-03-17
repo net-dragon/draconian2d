@@ -6,7 +6,8 @@ namespace UnityStandardAssets._2D
 {
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
+        [SerializeField] private float m_MoveSpeed = 10f;                    // The fastest the player can travel in the x axis.
+        public float m_MaxSpeed = 100f;
         [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
 		[SerializeField] private float m_FlyForce = 2f;                   //Amount of force added when the player jumps. Modifies and changes
         [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
@@ -90,9 +91,9 @@ namespace UnityStandardAssets._2D
 
 
         private void FixedUpdate()
-        {/*
+        {
 			Debug.Log (m_Rigidbody2D.velocity.y);
-			*/if (m_Rigidbody2D.velocity.y < maxFallSpeed) 
+			if (m_Rigidbody2D.velocity.y < maxFallSpeed) 
 			{
 
 				m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, maxFallSpeed);
@@ -116,6 +117,13 @@ namespace UnityStandardAssets._2D
                         m_Grounded = true;
                 }
                 m_Anim.SetBool("Ground", m_Grounded);
+
+               // float move = Input.GetAxis("Horizontal");
+               // float moveVertical = Input.GetAxis("Vertical");
+
+                //Vector2 movement = new Vector2(move, 0.0f);
+
+                
             }
 			
 
@@ -139,6 +147,7 @@ namespace UnityStandardAssets._2D
 				StartCoroutine(FlyRoutine());
 				stats.setCurrentStamina (stats.getCurrentStamina () - 20);
 			}
+            
             
 		}
 
@@ -197,8 +206,9 @@ namespace UnityStandardAssets._2D
 
         public void Move(float move, bool crouch, bool jump, bool glide)
         {
-			// If crouching, check to see if the character can stand up
-			if (!crouch && m_Anim.GetBool ("Crouch")) {
+            Vector2 movement = new Vector2(move, 0.0f);
+            // If crouching, check to see if the character can stand up
+            if (!crouch && m_Anim.GetBool ("Crouch")) {
 				// If the character has a ceiling preventing them from standing up, keep them crouching
 				if (Physics2D.OverlapCircle (m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround)) {
 					crouch = true;
@@ -209,7 +219,7 @@ namespace UnityStandardAssets._2D
 			m_Anim.SetBool ("Crouch", crouch);
 
 			//only control the player if grounded or airControl is turned on
-			if ((m_Grounded || m_AirControl) && !attacker.dashing) {
+			if (m_AirControl && !attacker.dashing) {
                
 				// Reduce the speed if crouching by the crouchSpeed multiplier
 				move = (crouch ? move * m_CrouchSpeed : move);
@@ -217,11 +227,16 @@ namespace UnityStandardAssets._2D
 				// The Speed animator parameter is set to the absolute value of the horizontal input.
 				m_Anim.SetFloat ("Speed", Mathf.Abs (move));
 
-				// Move the character
-				m_Rigidbody2D.velocity = new Vector2 (move * m_MaxSpeed, m_Rigidbody2D.velocity.y);
+                // Move the character
+                if(m_Rigidbody2D.velocity.x * movement.x < m_MaxSpeed)
+                    if(!m_Grounded)
+                    m_Rigidbody2D.AddForce(movement.normalized * m_MoveSpeed * Time.deltaTime, ForceMode2D.Impulse);
+                else
+                        m_Rigidbody2D.velocity = new Vector2(move * m_MaxSpeed, m_Rigidbody2D.velocity.y);
 
-				// If the input is moving the player right and the player is facing left...
-				if (move > 0 && !m_FacingRight) {
+
+                // If the input is moving the player right and the player is facing left...
+                if (move > 0 && !m_FacingRight) {
 					// ... flip the player.
 					Flip ();
 				}

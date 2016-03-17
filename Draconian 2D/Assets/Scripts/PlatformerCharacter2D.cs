@@ -61,7 +61,7 @@ namespace UnityStandardAssets._2D
 
         private void Awake()
         {
-            attacker = GetComponent<PlayerAttack>();
+            
 
             // Setting up references.
             m_GroundCheck = transform.Find("GroundCheck");
@@ -76,6 +76,11 @@ namespace UnityStandardAssets._2D
 			//staminaRecharge = false;
 			//beginStaminaRecharge = false;
 			stats.setStaminaRechargeRate (staminaRechargeRate);
+        }
+
+        private void Start()
+        {
+            attacker = GetComponent<PlayerAttack>();
         }
 		void Update ()
 		{
@@ -148,7 +153,7 @@ namespace UnityStandardAssets._2D
 				//apply the full jump force on the first frame, then apply less force
 				//each consecutive frame
 				
-				float proportionCompleted = timer / flyTime;
+				//float proportionCompleted = timer / flyTime;
 				//Vector2 thisFrameFlyVector = Vector2.Lerp( flyVector,m_Rigidbody2D.position,  proportionCompleted);
                 //m_Rigidbody2D.AddForce(thisFrameFlyVector);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, m_FlyForce);
@@ -204,11 +209,8 @@ namespace UnityStandardAssets._2D
 			m_Anim.SetBool ("Crouch", crouch);
 
 			//only control the player if grounded or airControl is turned on
-			if (m_Grounded || m_AirControl) {
-                if(attacker.dashing)
-                {
-                    Debug.Log("This isn't supposed to happen...");
-                }
+			if ((m_Grounded || m_AirControl) && !attacker.dashing) {
+               
 				// Reduce the speed if crouching by the crouchSpeed multiplier
 				move = (crouch ? move * m_CrouchSpeed : move);
 

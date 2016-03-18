@@ -37,8 +37,8 @@ namespace UnityStandardAssets._2D
 		public float staminaRechargeDelay = 3.0f; //Delay after stamina depletes until stamina can recharge
 		public float staminaRechargeRate = 50.0f; //Rate stamina recharges
 
-        private Rigidbody2D m_Rigidbody2D;  
-		public PlayerStats stats = new PlayerStats();
+        private Rigidbody2D m_Rigidbody2D;
+        public PlayerStats stats;
 
 		//public bool beginStaminaRecharge;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
@@ -67,9 +67,9 @@ namespace UnityStandardAssets._2D
 
 
 
-        private void Awake()
+        private void Start()
         {
-            
+            stats = new PlayerStats();
 
             // Setting up references.
             m_GroundCheck = transform.Find("GroundCheck");
@@ -84,12 +84,13 @@ namespace UnityStandardAssets._2D
 			//staminaRecharge = false;
 			//beginStaminaRecharge = false;
 			stats.setStaminaRechargeRate (staminaRechargeRate);
-        }
-
-        private void Start()
-        {
             attacker = GetComponent<PlayerAttack>();
         }
+
+       /* private void Start()
+        {
+            attacker = GetComponent<PlayerAttack>();
+        }*/
 		void Update ()
 		{
 				
@@ -113,7 +114,7 @@ namespace UnityStandardAssets._2D
 
 			m_Grounded = false;
 
-            if (!attacker.dashing)
+            if (attacker.dashing == false)
             {
                 // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
                 // This can be done using layers instead but Sample Assets will not overwrite your project settings.

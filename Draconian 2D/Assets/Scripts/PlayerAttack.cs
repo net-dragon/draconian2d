@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets._2D;
+using System;
+using UnityEngine.UI;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -13,6 +15,7 @@ public class PlayerAttack : MonoBehaviour
     private Rigidbody2D m_Rigidbody2D;
     private Vector2 dashVector;
     public float initialDashForce = 50f;
+    private bool dashCancel;
     public float dashIncrement = 1f;
     public float dashForce;
     public float maxDashForce = 100f;
@@ -22,6 +25,7 @@ public class PlayerAttack : MonoBehaviour
     // public float upTimer;
     private PlatformerCharacter2D character;
     public float stam;
+    public Slider dashBar;
 
 
     public bool dashing
@@ -33,6 +37,8 @@ public class PlayerAttack : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        dashBar.gameObject.SetActive(false);
+        dashCancel = false;
         character = GetComponent<PlatformerCharacter2D>();
 
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
@@ -50,7 +56,12 @@ public class PlayerAttack : MonoBehaviour
 
     }
     private void FixedUpdate()
-    { 
+    {
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.Space))
+            dashCancel = true;
+        else
+            dashCancel = false;
+
         dashDuration += Time.deltaTime;
         stam = character.currentStamina;
 
@@ -61,17 +72,22 @@ public class PlayerAttack : MonoBehaviour
         if (character.currentStamina > 0)
         {
             if (Input.GetButton("Fire1"))
-           {
-            
-            chargeCounter++;
-            if (chargeCounter >= chargeStart)
+            {
 
-                dashForce += (dashIncrement + Time.deltaTime);
+                chargeCounter++;
+                if (chargeCounter >= chargeStart)
+                {
+                    dashForce += (dashIncrement + Time.deltaTime);
+                    dashBar.gameObject.SetActive(true);
+                    dashBar.value = dashForce;
+                }
 
-            if (dashForce > maxDashForce)
+                if (dashForce > maxDashForce)
 
-                dashForce = maxDashForce;
+                    dashForce = maxDashForce;
             }
+            else
+                dashBar.gameObject.SetActive(false);
 
 
             //if (chargeCounter >= chargeStart)
@@ -88,7 +104,7 @@ public class PlayerAttack : MonoBehaviour
                 dashDuration = 0f;
                 // dashDuration += (dashDuration * Time.deltaTime);
                 dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
-                m_Rigidbody2D.AddForce(dashVector.normalized * dashForce, ForceMode2D.Impulse);
+                m_Rigidbody2D.velocity = dashVector.normalized * dashForce;        //m_Rigidbody2D.AddForce(dashVector.normalized * dashForce, ForceMode2D.Impulse);
                 dashForce = initialDashForce;
                 character.stats.setCurrentStamina(character.currentStamina - dashCost);
             }
@@ -101,18 +117,19 @@ public class PlayerAttack : MonoBehaviour
             chargeCounter = 0f;
         }
 
-            
+
 
         if (dashDuration < dashStop)
         {
             character.AirControl = false;
         }
-        else {
+        else
+        {
             character.AirControl = true;
         }
 
     }
-       
+
 
 
 

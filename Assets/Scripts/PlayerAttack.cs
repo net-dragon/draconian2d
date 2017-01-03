@@ -57,6 +57,8 @@ public class PlayerAttack : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        dashBar.maxValue = maxDashForce;
+        dashBar.minValue = initialDashForce;
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.Space))
             dashCancel = true;
         else

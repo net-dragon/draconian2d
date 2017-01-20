@@ -54,7 +54,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
 
-    }
+    }//empty
     private void FixedUpdate()
     {
         dashBar.maxValue = maxDashForce;
@@ -89,14 +89,21 @@ public class PlayerAttack : MonoBehaviour
                     dashForce = maxDashForce;
             }
             else
-                dashBar.gameObject.SetActive(false);
 
+                dashBar.gameObject.SetActive(false);
 
             //if (chargeCounter >= chargeStart)
             //dashing = true;
             //StartCoroutine(DashChargeRoutine());
 
         }
+        else if (character.currentStamina <= 0)
+        {
+            dashForce = initialDashForce;
+            dashBar.gameObject.SetActive(false);
+            chargeCounter = 0;
+        }
+            
 
 
         if (Input.GetButtonUp("Fire1"))

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - ButtonBrancher
   - Button
+  - Ground
+  - Enemy
+  - Menu
   layers:
   - Default
   - TransparentFX

@@ -674,7 +674,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1000013518267248, guid: 49db4b89698c3c9408587dc8fd41dde3, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114000011107057214, guid: 49db4b89698c3c9408587dc8fd41dde3,
         type: 2}
@@ -1508,7 +1508,7 @@ Prefab:
     - target: {fileID: 224000013080093738, guid: 49db4b89698c3c9408587dc8fd41dde3,
         type: 2}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 224000013080093738, guid: 49db4b89698c3c9408587dc8fd41dde3,
         type: 2}
@@ -1562,7 +1562,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1000013518267248, guid: 49db4b89698c3c9408587dc8fd41dde3, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114000011107057214, guid: 49db4b89698c3c9408587dc8fd41dde3,
         type: 2}
@@ -2893,8 +2893,8 @@ RectTransform:
   - {fileID: 2048068168}
   - {fileID: 453711241}
   - {fileID: 673584397}
-  - {fileID: 450420970}
   - {fileID: 1260631840}
+  - {fileID: 450420970}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_AnchorMin: {x: 0, y: 0}
@@ -3292,7 +3292,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 199494, guid: ab57de083cb30c54d868772842e94c86, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11420490, guid: ab57de083cb30c54d868772842e94c86, type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode

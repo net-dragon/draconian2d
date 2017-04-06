@@ -27,6 +27,12 @@ public class PlayerAttack : MonoBehaviour
     public float stam;
     public Slider dashBar;
 
+    public float currentStamina
+    {
+        get { return currentStamina; }
+        set { currentStamina = value; }
+    }
+
 
     public bool dashing
     {
@@ -55,7 +61,7 @@ public class PlayerAttack : MonoBehaviour
     {
 
     }//empty
-    private void FixedUpdate()
+    private void FixedUpdate() //clean
     {
         dashBar.maxValue = maxDashForce;
         dashBar.minValue = initialDashForce;
@@ -71,7 +77,7 @@ public class PlayerAttack : MonoBehaviour
         Debug.DrawLine(transform.position, mousePos);
 
         // Debug.Log(upTimer);
-        if (character.currentStamina > 0)
+        if (character.currentStamina > 0) //clean
         {
             if (Input.GetButton("Fire1"))
             {
@@ -106,7 +112,7 @@ public class PlayerAttack : MonoBehaviour
             
 
 
-        if (Input.GetButtonUp("Fire1"))
+        if (Input.GetButtonUp("Fire1")) //clean
         {
             if (chargeCounter >= chargeStart)
             {
@@ -115,7 +121,7 @@ public class PlayerAttack : MonoBehaviour
                 dashVector = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y);
                 m_Rigidbody2D.velocity = dashVector.normalized * dashForce;        //m_Rigidbody2D.AddForce(dashVector.normalized * dashForce, ForceMode2D.Impulse);
                 dashForce = initialDashForce;
-                character.stats.setCurrentStamina(character.currentStamina - dashCost);
+                character.currentStamina = (character.currentStamina - dashCost);
             }
             //dashing = true;
             //StartCoroutine( DashRoutine());
@@ -128,7 +134,7 @@ public class PlayerAttack : MonoBehaviour
 
 
 
-        if (dashDuration < dashStop)
+        if (dashDuration < dashStop) //clean
         {
             character.AirControl = false;
         }

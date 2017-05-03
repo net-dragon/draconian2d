@@ -9,7 +9,8 @@ namespace UnityStandardAssets._2D
     {
         [SerializeField]
         private float m_MoveSpeed = 10f;// The force applied to the player while in the air
-        public float m_MaxSpeed = 100f;// The fastest the player can travel in the x axis.
+        public float m_MaxGroundSpeed = 100f;// The fastest the player can travel in the x axis on foot.
+        public float m_MaxSpeed = 100f;// The fastest the player can travel in the x axis in air or ground.
         [SerializeField]
         private float m_JumpForce = 400f;// Amount of force added when the player jumps.
         [SerializeField]
@@ -53,6 +54,8 @@ namespace UnityStandardAssets._2D
         public Canvas dashCanvas;
 
         //public bool beginStaminaRecharge;
+        [SerializeField]
+        private bool m_CrouchCancel;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
         private bool flying;
         private bool flapping;
@@ -87,6 +90,7 @@ namespace UnityStandardAssets._2D
 
         private void Start()
         {
+            m_CrouchCancel = false;
             flapping = false;
             //stats = new PlayerStats();
             // Setting up references
@@ -113,6 +117,8 @@ namespace UnityStandardAssets._2D
 
         private void FixedUpdate()
         {
+            Debug.Log(m_Rigidbody2D.velocity.x);
+
             // Capping the players movement speed
             if (m_Rigidbody2D.velocity.y < maxFallSpeed) //clean
             {
@@ -247,10 +253,14 @@ namespace UnityStandardAssets._2D
         public void Move(float move, bool crouch, bool jump, bool glide) //clean
         {
             Vector2 movement = new Vector2(move, 0.0f);
+            //determines if crouch canceling
+            if (crouch && m_Rigidbody2D.velocity.x * movement.x > m_MaxGroundSpeed)
+                m_CrouchCancel = true;
+            else
+                m_CrouchCancel = false;
 
-
-            //Determines when you are flying and subtracts the stamina required
-            if (Input.GetButtonDown("Jump") && currentStamina > 0 && Time.time > nextFlap && Time.time > nextGlide && !m_Grounded)
+                //Determines when you are flying and subtracts the stamina required
+                if (Input.GetButtonDown("Jump") && currentStamina > 0 && Time.time > nextFlap && Time.time > nextGlide && !m_Grounded)
             {
                 flapping = true;
                 StartCoroutine(FlyRoutine());
@@ -278,7 +288,7 @@ namespace UnityStandardAssets._2D
             {
 
                 // Reduce the speed if crouching by the crouchSpeed multiplier
-                move = (crouch ? move * m_CrouchSpeed : move);
+               // move = (crouch ? move * m_CrouchSpeed : move);
 
                 // The Speed animator parameter is set to the absolute value of the horizontal input.
                 m_Anim.SetFloat("Speed", Mathf.Abs(move));
@@ -286,10 +296,10 @@ namespace UnityStandardAssets._2D
 
                 // Move the character
                 if (m_Rigidbody2D.velocity.x * movement.x < m_MaxSpeed) //clean/remake to add momentum?
-                    if (!m_Grounded)
+                    if (!m_Grounded|| m_CrouchCancel)
                         m_Rigidbody2D.AddForce(movement.normalized * m_MoveSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                    else
-                        m_Rigidbody2D.velocity = new Vector2(move * m_MaxSpeed, m_Rigidbody2D.velocity.y);
+                    else if (m_Grounded || !m_CrouchCancel)
+                        m_Rigidbody2D.velocity = new Vector2(move * m_MaxGroundSpeed, m_Rigidbody2D.velocity.y);
 
 
                 // If the input is moving the player right and the player is facing left...

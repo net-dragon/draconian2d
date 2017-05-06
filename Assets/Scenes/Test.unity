@@ -1106,7 +1106,17 @@ Prefab:
     - target: {fileID: 114000011987203980, guid: b2eec45e1821e874c9fec1b72e670e1f,
         type: 2}
       propertyPath: m_MaxGroundSpeed
-      value: 17
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011987203980, guid: b2eec45e1821e874c9fec1b72e670e1f,
+        type: 2}
+      propertyPath: slideDecreaseRate
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011987203980, guid: b2eec45e1821e874c9fec1b72e670e1f,
+        type: 2}
+      propertyPath: slideTimerMax
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b2eec45e1821e874c9fec1b72e670e1f, type: 2}

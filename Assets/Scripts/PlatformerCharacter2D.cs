@@ -39,9 +39,15 @@ namespace UnityStandardAssets._2D
         public float glideDelay = .3f;// Delay between glide and other flying actions
         public float glideDrag = -2;// vertical velocity of character when glide is used
         const float k_GroundedRadius = .2f;// Radius of the overlap circle to determine if grounded
+        private bool isSliding;
         private float nextFlap;// time that has elapsed since the latest flap
         private float nextGlide;// time that has elapsed between glides
         private bool m_Grounded;// Whether or not the player is grounded.
+        public float slideDecreaseRate = .5f;
+        [SerializeField]
+        private float slideSpeed;
+        private float slideTimer;
+        public float slideTimerMax;
         public float staminaRechargeDelay = 3.0f; //Delay after stamina depletes until stamina can recharge
         public float staminaRechargeRate = 50.0f; //Rate that stamina at recharges
 
@@ -90,6 +96,7 @@ namespace UnityStandardAssets._2D
 
         private void Start()
         {
+            isSliding = false;
             m_CrouchCancel = false;
             flapping = false;
             //stats = new PlayerStats();
@@ -254,7 +261,7 @@ namespace UnityStandardAssets._2D
         {
             Vector2 movement = new Vector2(move, 0.0f);
             //determines if crouch canceling
-            if (crouch && m_Rigidbody2D.velocity.x * movement.x > m_MaxGroundSpeed)
+            if (crouch && Mathf.Abs(m_Rigidbody2D.velocity.x) > m_MaxGroundSpeed)
                 m_CrouchCancel = true;
             else
                 m_CrouchCancel = false;
@@ -295,11 +302,34 @@ namespace UnityStandardAssets._2D
 
 
                 // Move the character
-                if (m_Rigidbody2D.velocity.x * movement.x < m_MaxSpeed) //clean/remake to add momentum?
-                    if (!m_Grounded|| m_CrouchCancel)
-                        m_Rigidbody2D.AddForce(movement.normalized * m_MoveSpeed * Time.deltaTime, ForceMode2D.Impulse);
-                    else if (m_Grounded || !m_CrouchCancel)
+                if (m_Rigidbody2D.velocity.x * movement.x < m_MaxSpeed) //Checks to see if below max speed
+                    if (!m_Grounded/*|| (m_CrouchCancel && m_Grounded)*/)// Checks to see if crouch canceling or grounded
+                        m_Rigidbody2D.AddForce(movement.normalized * m_MoveSpeed * Time.deltaTime, ForceMode2D.Impulse);//applies force to move
+                    else if (m_Grounded /*&& !m_CrouchCancel*/)
                         m_Rigidbody2D.velocity = new Vector2(move * m_MaxGroundSpeed, m_Rigidbody2D.velocity.y);
+                if ((m_CrouchCancel && m_Grounded))
+                {
+                    if (crouch && Grounded && !isSliding)
+                    {
+                        slideTimer = 0.0f;
+                        isSliding = true;
+                        slideSpeed = Mathf.Abs(m_Rigidbody2D.velocity.x);
+                        
+
+                    }
+
+                }
+                    if (isSliding)
+                    {
+                        m_Rigidbody2D.velocity = new Vector2(move *slideSpeed, m_Rigidbody2D.velocity.y);
+                        slideTimer += Time.deltaTime;
+                        if (slideTimer > slideTimerMax)
+                            slideSpeed -= (slideDecreaseRate * Time.deltaTime);
+                        if ((slideSpeed <= (m_MaxGroundSpeed -5)) || !crouch)// || (slideSpeed >= m_MaxGroundSpeed && move < 0))
+                            isSliding = false;
+                    }
+                
+
 
 
                 // If the input is moving the player right and the player is facing left...
@@ -335,7 +365,7 @@ namespace UnityStandardAssets._2D
             // if player should glide
             if (currentStamina > 0 && Input.GetKey(KeyCode.LeftShift) && Time.time > nextFlap && m_Rigidbody2D.velocity.y < -2) //clean
             {
-                m_Rigidbody2D.velocity = new Vector2(move * m_MaxSpeed, glideDrag);
+                m_Rigidbody2D.velocity = new Vector2(move * m_MaxGroundSpeed, glideDrag);
                 nextGlide = Time.time + glideDelay;
                 /*} else {
                     m_Rigidbody2D.gravityScale = normalDrag;*/

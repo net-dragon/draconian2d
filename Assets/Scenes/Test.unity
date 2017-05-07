@@ -1111,7 +1111,7 @@ Prefab:
     - target: {fileID: 114000011987203980, guid: b2eec45e1821e874c9fec1b72e670e1f,
         type: 2}
       propertyPath: slideDecreaseRate
-      value: 13
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 114000011987203980, guid: b2eec45e1821e874c9fec1b72e670e1f,
         type: 2}

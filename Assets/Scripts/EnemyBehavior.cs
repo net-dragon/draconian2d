@@ -122,11 +122,11 @@ public class EnemyBehavior : MonoBehaviour {
 			Vector2.Dot ((Vector2.right * direction), lookVector.normalized) >= Mathf.Cos (coneAngleRad);
 	}
 
-	void OnCollisionEnter2D(Collision2D clsn)
+	/*void OnCollisionEnter2D(Collision2D clsn)
 	{
 		if (clsn.gameObject == player && playerAttack.dashing) {
 			dashHitTimer = dashHitTime;
-		}
+		}*/
 
 	}
-}
+

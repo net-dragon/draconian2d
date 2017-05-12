@@ -7,10 +7,14 @@ namespace UnityStandardAssets._2D
 {
     public class PlatformerCharacter2D : MonoBehaviour
     {
+        [SerializeField]
+        private Ability[] abilities;
 
         /*[Range(0, 1)]
         [SerializeField]
         private float m_CrouchSpeed = .36f;// Amount of maxSpeed applied to crouching movement. 1 = 100%*/
+
+        public ScriptableObject primary;
 
         [SerializeField]
         private LayerMask m_WhatIsGround;// A mask determining what is ground to the character
@@ -66,41 +70,42 @@ namespace UnityStandardAssets._2D
         public float staminaRechargeRate = 50.0f; //Rate that stamina at recharges
 
         [SerializeField]
-        private bool m_AirControl = false;// Whether or not a player can steer while jumping;
+       // private bool m_AirControl = false;// Whether or not a player can steer while jumping;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
         private bool flying; // baisically if the player is in the air
         private bool flapping; // If the player wings are pushing are downwards.
         private bool isSliding; //Checks to see if player is sliding
         [SerializeField]
         private bool m_CrouchCancel; //To see if player can slide
+        [SerializeField]
         private bool m_Grounded;// Whether or not the player is grounded.
         //private bool gliding;
         //public bool staminaRecharge;
 
         
         public Vector2 flyVector; //Vector where player will fly
-        public Transform charPos; 
-        
+        public Transform charPos;
 
-        public bool AirControl /*Received from the Playyer Attack script*/
+        //Received from the Playyer Attack script
+       /* public bool AirControl 
         {
             get { return m_AirControl; }
             set { m_AirControl = value; }
-        }
+        }*/
 
-        /* public float Stamina
+         public float Stamina
          {
              get { return currentStamina; }
              set { currentStamina = value; }
-         }*/
+         }
 
         public bool Grounded
         {
             get { return m_Grounded; }
             set { m_Grounded = value; }
         }
-
-        private PlayerAttack attacker;
+        [SerializeField]
+        private BasicDashAbility dasher;
 
         private void Start()
         {
@@ -121,10 +126,10 @@ namespace UnityStandardAssets._2D
             //staminaRecharge = false;
             //beginStaminaRecharge = false;
             //stats.setStaminaRechargeRate(staminaRechargeRate);
-            attacker = GetComponent<PlayerAttack>();
+            //dasher = GetComponent<PlayerAttack>();
             currentStamina = maxStamina;
-        }
 
+        }
 
         void Update()
         {
@@ -135,6 +140,18 @@ namespace UnityStandardAssets._2D
         private void FixedUpdate()
         {
 
+            if (dasher.dashDuration < dasher.dashStop) //clean
+            {
+                dasher.dashing = true;
+            }
+            else
+            {
+                dasher.dashing = false;
+            }
+
+            dasher.dashDuration += Time.deltaTime;
+
+
             Debug.Log(m_Rigidbody2D.velocity.x);
 
             // Capping the players movement speed while falling
@@ -142,7 +159,7 @@ namespace UnityStandardAssets._2D
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, maxFallSpeed);
 
             //capping player's horizontal movement speed
-            if (Math.Abs(m_Rigidbody2D.velocity.x) > m_MaxSpeed && attacker.dashing == false)
+            if (Math.Abs(m_Rigidbody2D.velocity.x) > m_MaxSpeed && dasher.dashing == false)
             {
                 if (m_Rigidbody2D.velocity.x > 0)
                     m_Rigidbody2D.velocity = new Vector2(m_MaxSpeed, m_Rigidbody2D.velocity.y);
@@ -160,7 +177,7 @@ namespace UnityStandardAssets._2D
             m_Grounded = false;//Constantly sets the state of the player as not grounded unless otherwise stated
 
             //Determines if the player is grounded or not
-            if (attacker.dashing == false) //clean
+            if (dasher.dashing == false) //clean
             {
                 // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
                 // This can be done using layers instead but Sample Assets will not overwrite your project settings.
@@ -277,7 +294,7 @@ namespace UnityStandardAssets._2D
             m_Anim.SetBool("Crouch", crouch);
 
             //only control the player if grounded or airControl is turned on
-            if (m_AirControl && !attacker.dashing)
+            if (!dasher.dashing)
             {
 
                 // Reduce the speed if crouching by the crouchSpeed multiplier
@@ -385,5 +402,10 @@ namespace UnityStandardAssets._2D
             }
 
         }
+        /*public void PrimaryAttack()
+        {
+            if (Input.GetButtonDown("Fire1"))
+
+        }*/
     }
 }
